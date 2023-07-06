@@ -1,0 +1,64 @@
+
+http 代理
+
+
+
+安装必须
+
+sudo apt install squid
+sudo cp /etc/squid/squid.conf /etc/squid/squid.conf.bak
+sudo vim /etc/squid/squid.conf
+sudo apt install apache2-utils
+
+设置用户和密码
+sudo htpasswd -c /etc/squid/passwd user1
+
+修改配置文件
+sudo vim /etc/squid/squid.conf
+
+重启服务
+sudo service squid restart
+
+验证代理服务器是否正在运行：
+sudo service squid status
+
+
+
+
+___________________________
+
+acl localnet src 100.64.0.0/10
+acl localnet src 172.16.0.0/12
+acl localnet src 192.168.0.0/16
+acl localnet src fc00::/7       
+acl SSL_ports port 443
+acl Safe_ports port 80
+acl Safe_ports port 21
+acl Safe_ports port 443
+acl Safe_ports port 70
+acl Safe_ports port 210
+acl Safe_ports port 1025-65535
+acl Safe_ports port 280
+acl Safe_ports port 488
+acl Safe_ports port 591
+acl Safe_ports port 777
+acl CONNECT method CONNECT
+http_access deny CONNECT !SSL_ports
+include /etc/squid/conf.d/*
+http_port 3128
+coredump_dir /var/spool/squid
+refresh_pattern ^ftp:
+refresh_pattern ^gopher:
+refresh_pattern -i (/cgi-bin/|\?) 0
+refresh_pattern \/(Packages|Sources)(|\.bz2|\.gz|\.xz)$ 0 0% 0 refresh-ims
+refresh_pattern \/Release(|\.gpg)$ 0 0% 0 refresh-ims
+refresh_pattern \/InRelease$ 0 0% 0 refresh-ims
+refresh_pattern \/(Translation-.*)(|\.bz2|\.gz|\.xz)$ 0 0% 0 refresh-ims
+refresh_pattern .
+auth_param basic program /usr/lib/squid/basic_ncsa_auth /etc/squid/passwd
+auth_param basic children 5
+auth_param basic realm Squid proxy-caching web server
+auth_param basic credentialsttl 2 hours
+auth_param basic casesensitive off
+acl auth_users proxy_auth REQUIRED
+http_access allow auth_users

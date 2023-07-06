@@ -1,0 +1,12 @@
+sudo yum install screen
+启动一个新的 screen 会话：
+
+screen -S session_name
+在新的 screen 会话中运行你的脚本：
+
+python your_script.py
+按下 Ctrl + A，然后按下 d 来分离 screen 会话。此时脚本将继续在后台运行。
+
+若要重新连接到 screen 会话，可以使用以下命令：
+
+screen -r session_name
